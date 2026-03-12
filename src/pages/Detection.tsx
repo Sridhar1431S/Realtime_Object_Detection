@@ -1,7 +1,10 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Video, VideoOff, Camera, Activity, Settings2 } from "lucide-react";
+import { Video, VideoOff, Camera, Activity, Settings2, Upload, ImageIcon } from "lucide-react";
 import { saveDetection } from "@/lib/detectionStore";
+import { getSettings } from "@/lib/settingsStore";
+import { playClickSound } from "@/lib/settingsStore";
+import { SimpleTracker, TrackedDetection } from "@/lib/tracker";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
@@ -16,16 +19,20 @@ interface Detection {
 export default function DetectionPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [running, setRunning] = useState(false);
   const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
   const [loading, setLoading] = useState(false);
   const [fps, setFps] = useState(0);
-  const [detections, setDetections] = useState<Detection[]>([]);
-  const [threshold, setThreshold] = useState(0.5);
+  const [detections, setDetections] = useState<TrackedDetection[]>([]);
+  const [threshold, setThreshold] = useState(() => getSettings().confidenceThreshold);
   const [objectCount, setObjectCount] = useState(0);
+  const [mode, setMode] = useState<"webcam" | "image">("webcam");
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const animFrameRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
   const lastSaveRef = useRef<number>(0);
+  const trackerRef = useRef(new SimpleTracker());
 
   // Load model
   useEffect(() => {
@@ -34,15 +41,13 @@ export default function DetectionPage() {
       setLoading(true);
       await tf.ready();
       const m = await cocoSsd.load({ base: "lite_mobilenet_v2" });
-      if (!cancelled) {
-        setModel(m);
-        setLoading(false);
-      }
+      if (!cancelled) { setModel(m); setLoading(false); }
     })();
     return () => { cancelled = true; };
   }, []);
 
   const startCamera = useCallback(async () => {
+    playClickSound();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: 640, height: 480 },
@@ -52,13 +57,17 @@ export default function DetectionPage() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
+      trackerRef.current.reset();
       setRunning(true);
+      setMode("webcam");
+      setUploadedImage(null);
     } catch (err) {
       console.error("Camera error:", err);
     }
   }, []);
 
   const stopCamera = useCallback(() => {
+    playClickSound();
     setRunning(false);
     cancelAnimationFrame(animFrameRef.current);
     if (streamRef.current) {
@@ -68,6 +77,7 @@ export default function DetectionPage() {
     if (videoRef.current) videoRef.current.srcObject = null;
     setDetections([]);
     setFps(0);
+    trackerRef.current.reset();
   }, []);
 
   // Detection loop
@@ -79,10 +89,11 @@ export default function DetectionPage() {
     const ctx = canvas.getContext("2d")!;
     let lastTime = performance.now();
     let frameCount = 0;
+    const settings = getSettings();
 
     const detect = async () => {
       if (!running) return;
-      
+
       if (video.readyState === 4) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -92,27 +103,17 @@ export default function DetectionPage() {
           (p) => ALLOWED_OBJECTS.includes(p.class) && p.score >= threshold
         ) as Detection[];
 
-        setDetections(filtered);
-        setObjectCount(filtered.length);
+        const tracked = settings.trackingEnabled
+          ? trackerRef.current.update(filtered)
+          : filtered.map((d, i) => ({ ...d, trackId: i + 1 }));
+
+        setDetections(tracked);
+        setObjectCount(tracked.length);
 
         // Draw
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(video, 0, 0);
-
-        filtered.forEach((d) => {
-          const [x, y, w, h] = d.bbox;
-          ctx.strokeStyle = "hsl(185, 100%, 50%)";
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x, y, w, h);
-
-          const label = `${d.class} ${(d.score * 100).toFixed(0)}%`;
-          ctx.font = "14px Inter, sans-serif";
-          const textW = ctx.measureText(label).width;
-          ctx.fillStyle = "hsla(185, 100%, 50%, 0.85)";
-          ctx.fillRect(x, y - 22, textW + 12, 22);
-          ctx.fillStyle = "hsl(220, 20%, 7%)";
-          ctx.fillText(label, x + 6, y - 6);
-        });
+        drawDetections(ctx, tracked, settings.trackingEnabled);
 
         // FPS
         frameCount++;
@@ -123,10 +124,10 @@ export default function DetectionPage() {
           lastTime = now;
         }
 
-        // Save detections periodically (every 3s max)
-        if (filtered.length > 0 && now - lastSaveRef.current > 3000) {
+        // Save detections periodically
+        if (tracked.length > 0 && now - lastSaveRef.current > 3000) {
           lastSaveRef.current = now;
-          filtered.forEach((d) => {
+          tracked.forEach((d) => {
             saveDetection({
               id: crypto.randomUUID(),
               objectName: d.class,
@@ -144,13 +145,63 @@ export default function DetectionPage() {
     return () => cancelAnimationFrame(animFrameRef.current);
   }, [running, model, threshold]);
 
+  // Image upload handler
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    playClickSound();
+    const file = e.target.files?.[0];
+    if (!file || !model) return;
+
+    stopCamera();
+    setMode("image");
+
+    const url = URL.createObjectURL(file);
+    setUploadedImage(url);
+
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0);
+
+      const predictions = await model.detect(img);
+      const filtered = predictions.filter(
+        (p) => ALLOWED_OBJECTS.includes(p.class) && p.score >= threshold
+      ) as Detection[];
+
+      const tracked = filtered.map((d, i) => ({ ...d, trackId: i + 1 }));
+      setDetections(tracked);
+      setObjectCount(tracked.length);
+
+      drawDetections(ctx, tracked, false);
+
+      // Save
+      tracked.forEach((d) => {
+        saveDetection({
+          id: crypto.randomUUID(),
+          objectName: d.class,
+          confidence: d.score,
+          timestamp: Date.now(),
+        });
+      });
+
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  }, [model, threshold, stopCamera]);
+
   const captureScreenshot = () => {
+    playClickSound();
     if (!canvasRef.current) return;
     const link = document.createElement("a");
-    link.download = `detection-${Date.now()}.png`;
+    link.download = `detectra-${Date.now()}.png`;
     link.href = canvasRef.current.toDataURL();
     link.click();
   };
+
+  const showCanvas = running || (mode === "image" && uploadedImage);
 
   return (
     <div className="min-h-screen pt-20 pb-12">
@@ -159,7 +210,7 @@ export default function DetectionPage() {
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
             Live <span className="text-primary">Detection</span>
           </h1>
-          <p className="text-muted-foreground mb-8">Real-time object detection using your webcam.</p>
+          <p className="text-muted-foreground mb-8">Real-time object detection and tracking using AI.</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-6">
@@ -167,9 +218,9 @@ export default function DetectionPage() {
           <div className="lg:col-span-2">
             <div className="glass-card rounded-xl overflow-hidden">
               <div className="relative aspect-video bg-muted flex items-center justify-center">
-                <video ref={videoRef} className="absolute inset-0 w-full h-full object-cover" style={{ display: running ? "none" : "none" }} muted playsInline />
-                <canvas ref={canvasRef} className={`absolute inset-0 w-full h-full object-contain ${running ? "" : "hidden"}`} />
-                {!running && (
+                <video ref={videoRef} className="hidden" muted playsInline />
+                <canvas ref={canvasRef} className={`absolute inset-0 w-full h-full object-contain ${showCanvas ? "" : "hidden"}`} />
+                {!showCanvas && (
                   <div className="text-center text-muted-foreground">
                     {loading ? (
                       <div className="flex flex-col items-center gap-3">
@@ -179,15 +230,14 @@ export default function DetectionPage() {
                     ) : (
                       <div className="flex flex-col items-center gap-3">
                         <Video className="w-12 h-12 text-primary/50" />
-                        <p>Click "Start Detection" to begin</p>
+                        <p>Start webcam or upload an image to begin</p>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* FPS badge */}
                 {running && (
-                  <div className="absolute top-3 left-3 glass rounded-md px-3 py-1 text-xs font-mono text-primary">
+                  <div className="absolute top-3 left-3 bg-background/80 backdrop-blur rounded-md px-3 py-1 text-xs font-mono text-primary border border-border">
                     {fps} FPS
                   </div>
                 )}
@@ -196,43 +246,32 @@ export default function DetectionPage() {
               {/* Controls */}
               <div className="p-4 flex flex-wrap items-center gap-3 border-t border-border">
                 {!running ? (
-                  <button
-                    onClick={startCamera}
-                    disabled={loading || !model}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg gradient-cyan text-primary-foreground font-medium disabled:opacity-50 glow-cyan hover:opacity-90 transition"
-                  >
+                  <button onClick={startCamera} disabled={loading || !model} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg gradient-cyan text-primary-foreground font-medium disabled:opacity-50 hover:opacity-90 transition shadow-md">
                     <Video className="w-4 h-4" />
                     Start Detection
                   </button>
                 ) : (
-                  <button
-                    onClick={stopCamera}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-medium hover:opacity-90 transition"
-                  >
+                  <button onClick={stopCamera} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-medium hover:opacity-90 transition">
                     <VideoOff className="w-4 h-4" />
                     Stop
                   </button>
                 )}
-                <button
-                  onClick={captureScreenshot}
-                  disabled={!running}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg glass text-foreground font-medium disabled:opacity-40 hover:bg-secondary transition"
-                >
+
+                <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleImageUpload} />
+                <button onClick={() => { fileInputRef.current?.click(); playClickSound(); }} disabled={loading || !model} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card text-foreground font-medium disabled:opacity-40 hover:bg-secondary transition">
+                  <Upload className="w-4 h-4" />
+                  Upload Image
+                </button>
+
+                <button onClick={captureScreenshot} disabled={!showCanvas} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card text-foreground font-medium disabled:opacity-40 hover:bg-secondary transition">
                   <Camera className="w-4 h-4" />
                   Screenshot
                 </button>
+
                 <div className="flex items-center gap-2 ml-auto">
                   <Settings2 className="w-4 h-4 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">Threshold:</span>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="0.9"
-                    step="0.05"
-                    value={threshold}
-                    onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                    className="w-24 accent-primary"
-                  />
+                  <input type="range" min="0.1" max="0.9" step="0.05" value={threshold} onChange={(e) => setThreshold(parseFloat(e.target.value))} className="w-24 accent-primary" />
                   <span className="text-xs font-mono text-primary">{(threshold * 100).toFixed(0)}%</span>
                 </div>
               </div>
@@ -241,7 +280,6 @@ export default function DetectionPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Stats */}
             <div className="glass-card rounded-xl p-5">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Performance</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -257,23 +295,15 @@ export default function DetectionPage() {
               </div>
             </div>
 
-            {/* Live detections */}
             <div className="glass-card rounded-xl p-5">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-                Live Detections
-              </h3>
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Live Detections</h3>
               {detections.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No objects detected</p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {detections.map((d, i) => (
-                    <motion.div
-                      key={`${d.class}-${i}`}
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-center justify-between p-2 rounded-lg bg-secondary/50"
-                    >
-                      <span className="text-sm font-medium text-foreground capitalize">{d.class}</span>
+                    <motion.div key={`${d.class}-${d.trackId}-${i}`} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50">
+                      <span className="text-sm font-medium text-foreground capitalize">{d.class} #{d.trackId}</span>
                       <span className="text-xs font-mono text-primary">{(d.score * 100).toFixed(1)}%</span>
                     </motion.div>
                   ))}
@@ -285,4 +315,23 @@ export default function DetectionPage() {
       </div>
     </div>
   );
+}
+
+function drawDetections(ctx: CanvasRenderingContext2D, detections: TrackedDetection[], showTrackId: boolean) {
+  detections.forEach((d) => {
+    const [x, y, w, h] = d.bbox;
+    ctx.strokeStyle = "hsl(200, 100%, 50%)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+
+    const label = showTrackId
+      ? `${d.class} #${d.trackId} ${(d.score * 100).toFixed(0)}%`
+      : `${d.class} ${(d.score * 100).toFixed(0)}%`;
+    ctx.font = "14px Inter, sans-serif";
+    const textW = ctx.measureText(label).width;
+    ctx.fillStyle = "hsla(200, 100%, 50%, 0.85)";
+    ctx.fillRect(x, y - 22, textW + 12, 22);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(label, x + 6, y - 6);
+  });
 }
