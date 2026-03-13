@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      detection_history: {
+        Row: {
+          created_at: string
+          detected_objects: Json
+          duration_seconds: number | null
+          id: string
+          image_url: string | null
+          object_count: number
+          source: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detected_objects?: Json
+          duration_seconds?: number | null
+          id?: string
+          image_url?: string | null
+          object_count?: number
+          source?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          detected_objects?: Json
+          duration_seconds?: number | null
+          id?: string
+          image_url?: string | null
+          object_count?: number
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          total_detections: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          total_detections?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          total_detections?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          animations_enabled: boolean
+          confidence_threshold: number
+          counting_enabled: boolean
+          created_at: string
+          dark_mode: boolean
+          frame_rate: number
+          id: string
+          performance_mode: boolean
+          sound_enabled: boolean
+          tracking_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          animations_enabled?: boolean
+          confidence_threshold?: number
+          counting_enabled?: boolean
+          created_at?: string
+          dark_mode?: boolean
+          frame_rate?: number
+          id?: string
+          performance_mode?: boolean
+          sound_enabled?: boolean
+          tracking_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          animations_enabled?: boolean
+          confidence_threshold?: number
+          counting_enabled?: boolean
+          created_at?: string
+          dark_mode?: boolean
+          frame_rate?: number
+          id?: string
+          performance_mode?: boolean
+          sound_enabled?: boolean
+          tracking_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
