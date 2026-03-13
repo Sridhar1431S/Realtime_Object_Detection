@@ -1,20 +1,22 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Scan, Menu, X } from "lucide-react";
+import { Scan, Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { playClickSound } from "@/lib/settingsStore";
+import { useAuth } from "@/contexts/AuthContext";
 
 const links = [
   { to: "/", label: "Home" },
   { to: "/detection", label: "Detection" },
   { to: "/history", label: "History" },
   { to: "/statistics", label: "Statistics" },
-  { to: "/settings", label: "Settings" },
+  { to: "/profile", label: "Profile" },
 ];
 
 export default function Navbar() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
