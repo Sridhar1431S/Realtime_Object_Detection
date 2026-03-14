@@ -41,9 +41,9 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="glass-card rounded-2xl p-8 shadow-lg">
+        <div className="hover-card rounded-2xl p-6 sm:p-8 shadow-lg">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-xl gradient-cyan flex items-center justify-center mb-4">
+            <div className="w-12 h-12 rounded-xl gradient-cyan flex items-center justify-center mb-4 shadow-md">
               <Scan className="w-7 h-7 text-primary-foreground" />
             </div>
             <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
@@ -86,7 +86,7 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full gradient-cyan text-primary-foreground font-medium">
+            <Button type="submit" disabled={loading} className="w-full btn-glow gradient-cyan text-primary-foreground font-medium">
               {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
