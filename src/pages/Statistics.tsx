@@ -49,28 +49,28 @@ export default function StatisticsPage() {
 
   return (
     <div className="min-h-screen pt-20 pb-12">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             Detection <span className="text-primary">Statistics</span>
           </h1>
-          <p className="text-muted-foreground mb-8">Analytics overview of all detection activity.</p>
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">Analytics overview of all detection activity.</p>
         </motion.div>
 
         {/* Stat Cards */}
-        <div className="grid sm:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
           {[
-            { icon: Eye, label: "Total Detections", value: totalDetections, color: "text-primary" },
-            { icon: Award, label: "Most Detected", value: mostDetected, color: "text-primary" },
-            { icon: TrendingUp, label: "Object Types", value: barData.length, color: "text-primary" },
+            { icon: Eye, label: "Total Detections", value: totalDetections },
+            { icon: Award, label: "Most Detected", value: mostDetected },
+            { icon: TrendingUp, label: "Object Types", value: barData.length },
           ].map((s) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card rounded-xl p-6"
+              className="hover-card rounded-xl p-5 sm:p-6"
             >
-              <s.icon className={`w-6 h-6 ${s.color} mb-3`} />
+              <s.icon className="w-6 h-6 text-primary mb-3" />
               <p className="text-2xl font-bold font-mono text-foreground">{s.value}</p>
               <p className="text-sm text-muted-foreground">{s.label}</p>
             </motion.div>
@@ -78,21 +78,21 @@ export default function StatisticsPage() {
         </div>
 
         {totalDetections === 0 ? (
-          <div className="glass-card rounded-xl p-12 text-center text-muted-foreground">
+          <div className="hover-card rounded-xl p-8 sm:p-12 text-center text-muted-foreground">
             No detection data yet. Use the detection page to start collecting data.
           </div>
         ) : (
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Bar Chart */}
-            <div className="glass-card rounded-xl p-6">
+            <div className="hover-card rounded-xl p-4 sm:p-6">
               <h3 className="text-lg font-semibold mb-4 text-foreground">Object Frequency</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={barData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,15%,18%)" />
-                  <XAxis dataKey="name" tick={{ fill: "hsl(215,15%,55%)", fontSize: 12 }} />
-                  <YAxis tick={{ fill: "hsl(215,15%,55%)", fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
                   <Tooltip
-                    contentStyle={{ background: "hsl(220,18%,10%)", border: "1px solid hsl(220,15%,18%)", borderRadius: "8px", color: "hsl(200,20%,95%)" }}
+                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--foreground))" }}
                   />
                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                     {barData.map((_, i) => (
@@ -104,7 +104,7 @@ export default function StatisticsPage() {
             </div>
 
             {/* Pie Chart */}
-            <div className="glass-card rounded-xl p-6">
+            <div className="hover-card rounded-xl p-4 sm:p-6">
               <h3 className="text-lg font-semibold mb-4 text-foreground">Object Distribution</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -114,24 +114,24 @@ export default function StatisticsPage() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ background: "hsl(220,18%,10%)", border: "1px solid hsl(220,15%,18%)", borderRadius: "8px", color: "hsl(200,20%,95%)" }}
+                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--foreground))" }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
 
             {/* Line Chart */}
-            <div className="glass-card rounded-xl p-6 lg:col-span-2">
+            <div className="hover-card rounded-xl p-4 sm:p-6 lg:col-span-2">
               <h3 className="text-lg font-semibold mb-4 text-foreground">Detection Timeline</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={timelineData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,15%,18%)" />
-                  <XAxis dataKey="date" tick={{ fill: "hsl(215,15%,55%)", fontSize: 12 }} />
-                  <YAxis tick={{ fill: "hsl(215,15%,55%)", fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
                   <Tooltip
-                    contentStyle={{ background: "hsl(220,18%,10%)", border: "1px solid hsl(220,15%,18%)", borderRadius: "8px", color: "hsl(200,20%,95%)" }}
+                    contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", color: "hsl(var(--foreground))" }}
                   />
-                  <Line type="monotone" dataKey="count" stroke="hsl(185,100%,50%)" strokeWidth={2} dot={{ fill: "hsl(185,100%,50%)" }} />
+                  <Line type="monotone" dataKey="count" stroke="hsl(185, 100%, 50%)" strokeWidth={2} dot={{ fill: "hsl(185, 100%, 50%)" }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

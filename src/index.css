@@ -136,4 +136,39 @@
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  /* Animated hover card effect */
+  .hover-card {
+    @apply bg-card border border-border shadow-sm relative;
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+  }
+  .hover-card:hover {
+    @apply shadow-lg;
+    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 8px 30px hsl(var(--primary) / 0.1), 0 0 0 1px hsl(var(--primary) / 0.1);
+  }
+  .dark .hover-card {
+    background: hsl(220 18% 10% / 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(185 100% 50% / 0.1);
+  }
+  .dark .hover-card:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 8px 30px hsl(var(--primary) / 0.15), 0 0 0 1px hsl(var(--primary) / 0.2);
+  }
+
+  /* Button glow effect */
+  .btn-glow {
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .btn-glow:hover {
+    box-shadow: 0 4px 15px hsl(var(--primary) / 0.3);
+    transform: translateY(-1px);
+  }
+  .btn-glow:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.2);
+  }
 }

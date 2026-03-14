@@ -8,8 +8,6 @@ import { SimpleTracker, TrackedDetection } from "@/lib/tracker";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
-const ALLOWED_OBJECTS = ["person", "laptop", "cell phone", "chair", "bottle", "keyboard", "mouse", "backpack", "car"];
-
 interface Detection {
   class: string;
   score: number;
@@ -29,6 +27,7 @@ export default function DetectionPage() {
   const [objectCount, setObjectCount] = useState(0);
   const [mode, setMode] = useState<"webcam" | "image">("webcam");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [imageDetecting, setImageDetecting] = useState(false);
   const animFrameRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
   const lastSaveRef = useRef<number>(0);
@@ -100,7 +99,7 @@ export default function DetectionPage() {
 
         const predictions = await model.detect(video);
         const filtered = predictions.filter(
-          (p) => ALLOWED_OBJECTS.includes(p.class) && p.score >= threshold
+          (p) => p.score >= threshold
         ) as Detection[];
 
         const tracked = settings.trackingEnabled
@@ -153,14 +152,33 @@ export default function DetectionPage() {
 
     stopCamera();
     setMode("image");
+    setDetections([]);
+    setObjectCount(0);
 
     const url = URL.createObjectURL(file);
     setUploadedImage(url);
 
+    // Draw image preview without detection
     const img = new Image();
-    img.onload = async () => {
+    img.onload = () => {
       const canvas = canvasRef.current;
       if (!canvas) return;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0);
+    };
+    img.src = url;
+  }, [model, stopCamera]);
+
+  const detectFromImage = useCallback(async () => {
+    if (!model || !canvasRef.current || !uploadedImage) return;
+    playClickSound();
+    setImageDetecting(true);
+
+    const img = new Image();
+    img.onload = async () => {
+      const canvas = canvasRef.current!;
       canvas.width = img.width;
       canvas.height = img.height;
       const ctx = canvas.getContext("2d")!;
@@ -168,7 +186,7 @@ export default function DetectionPage() {
 
       const predictions = await model.detect(img);
       const filtered = predictions.filter(
-        (p) => ALLOWED_OBJECTS.includes(p.class) && p.score >= threshold
+        (p) => p.score >= threshold
       ) as Detection[];
 
       const tracked = filtered.map((d, i) => ({ ...d, trackId: i + 1 }));
@@ -187,10 +205,10 @@ export default function DetectionPage() {
         });
       });
 
-      URL.revokeObjectURL(url);
+      setImageDetecting(false);
     };
-    img.src = url;
-  }, [model, threshold, stopCamera]);
+    img.src = uploadedImage;
+  }, [model, threshold, uploadedImage]);
 
   const captureScreenshot = () => {
     playClickSound();
@@ -205,23 +223,23 @@ export default function DetectionPage() {
 
   return (
     <div className="min-h-screen pt-20 pb-12">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             Live <span className="text-primary">Detection</span>
           </h1>
-          <p className="text-muted-foreground mb-8">Real-time object detection and tracking using AI.</p>
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">Real-time object detection and tracking using AI.</p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Video feed */}
           <div className="lg:col-span-2">
-            <div className="glass-card rounded-xl overflow-hidden">
+            <div className="hover-card rounded-xl overflow-hidden">
               <div className="relative aspect-video bg-muted flex items-center justify-center">
                 <video ref={videoRef} className="hidden" muted playsInline />
                 <canvas ref={canvasRef} className={`absolute inset-0 w-full h-full object-contain ${showCanvas ? "" : "hidden"}`} />
                 {!showCanvas && (
-                  <div className="text-center text-muted-foreground">
+                  <div className="text-center text-muted-foreground p-4">
                     {loading ? (
                       <div className="flex flex-col items-center gap-3">
                         <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -230,7 +248,7 @@ export default function DetectionPage() {
                     ) : (
                       <div className="flex flex-col items-center gap-3">
                         <Video className="w-12 h-12 text-primary/50" />
-                        <p>Start webcam or upload an image to begin</p>
+                        <p className="text-sm sm:text-base">Start webcam or upload an image to begin</p>
                       </div>
                     )}
                   </div>
@@ -241,34 +259,53 @@ export default function DetectionPage() {
                     {fps} FPS
                   </div>
                 )}
+
+                {imageDetecting && (
+                  <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm text-foreground font-medium">Detecting objects...</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Controls */}
-              <div className="p-4 flex flex-wrap items-center gap-3 border-t border-border">
+              <div className="p-3 sm:p-4 flex flex-wrap items-center gap-2 sm:gap-3 border-t border-border">
                 {!running ? (
-                  <button onClick={startCamera} disabled={loading || !model} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg gradient-cyan text-primary-foreground font-medium disabled:opacity-50 hover:opacity-90 transition shadow-md">
+                  <button onClick={startCamera} disabled={loading || !model} className="btn-glow inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg gradient-cyan text-primary-foreground font-medium text-sm disabled:opacity-50 transition shadow-md">
                     <Video className="w-4 h-4" />
-                    Start Detection
+                    <span className="hidden sm:inline">Start Detection</span>
+                    <span className="sm:hidden">Start</span>
                   </button>
                 ) : (
-                  <button onClick={stopCamera} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-destructive text-destructive-foreground font-medium hover:opacity-90 transition">
+                  <button onClick={stopCamera} className="btn-glow inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg bg-destructive text-destructive-foreground font-medium text-sm transition">
                     <VideoOff className="w-4 h-4" />
                     Stop
                   </button>
                 )}
 
                 <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleImageUpload} />
-                <button onClick={() => { fileInputRef.current?.click(); playClickSound(); }} disabled={loading || !model} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card text-foreground font-medium disabled:opacity-40 hover:bg-secondary transition">
+                <button onClick={() => { fileInputRef.current?.click(); playClickSound(); }} disabled={loading || !model} className="btn-glow inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-border bg-card text-foreground font-medium text-sm disabled:opacity-40 hover:bg-secondary transition">
                   <Upload className="w-4 h-4" />
-                  Upload Image
+                  <span className="hidden sm:inline">Upload Image</span>
+                  <span className="sm:hidden">Upload</span>
                 </button>
 
-                <button onClick={captureScreenshot} disabled={!showCanvas} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card text-foreground font-medium disabled:opacity-40 hover:bg-secondary transition">
+                {mode === "image" && uploadedImage && (
+                  <button onClick={detectFromImage} disabled={imageDetecting || !model} className="btn-glow inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg gradient-cyan text-primary-foreground font-medium text-sm disabled:opacity-50 transition shadow-md">
+                    <ImageIcon className="w-4 h-4" />
+                    <span className="hidden sm:inline">Detect Objects</span>
+                    <span className="sm:hidden">Detect</span>
+                  </button>
+                )}
+
+                <button onClick={captureScreenshot} disabled={!showCanvas} className="btn-glow inline-flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-border bg-card text-foreground font-medium text-sm disabled:opacity-40 hover:bg-secondary transition">
                   <Camera className="w-4 h-4" />
-                  Screenshot
+                  <span className="hidden sm:inline">Screenshot</span>
                 </button>
 
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto mt-2 sm:mt-0">
                   <Settings2 className="w-4 h-4 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">Threshold:</span>
                   <input type="range" min="0.1" max="0.9" step="0.05" value={threshold} onChange={(e) => setThreshold(parseFloat(e.target.value))} className="w-24 accent-primary" />
@@ -279,8 +316,8 @@ export default function DetectionPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="glass-card rounded-xl p-5">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="hover-card rounded-xl p-4 sm:p-5">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Performance</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center">
@@ -295,7 +332,7 @@ export default function DetectionPage() {
               </div>
             </div>
 
-            <div className="glass-card rounded-xl p-5">
+            <div className="hover-card rounded-xl p-4 sm:p-5">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Live Detections</h3>
               {detections.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No objects detected</p>
