@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Upload, Video, Zap, Shield, BarChart3, Clock, Brain, Cpu, Eye, Target, ArrowRight, Monitor, Users, Car, Scan } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { playClickSound } from "@/lib/settingsStore";
 import { useRef } from "react";
 import heroImg from "@/assets/hero-detection.jpg";
