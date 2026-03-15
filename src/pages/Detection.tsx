@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Video, VideoOff, Camera, Activity, Settings2, Upload, ImageIcon } from "lucide-react";
 import { saveDetection } from "@/lib/detectionStore";
 import { getSettings } from "@/lib/settingsStore";
 import { playClickSound } from "@/lib/settingsStore";
 import { SimpleTracker, TrackedDetection } from "@/lib/tracker";
+import ObjectSearchBar from "@/components/ObjectSearchBar";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
