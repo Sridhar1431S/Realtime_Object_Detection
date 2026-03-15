@@ -340,12 +340,17 @@ export default function DetectionPage() {
             </div>
 
             <div className="hover-card rounded-xl p-4 sm:p-5">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Search Objects</h3>
+              <ObjectSearchBar value={searchFilter} onChange={setSearchFilter} placeholder="Filter detections..." />
+            </div>
+
+            <div className="hover-card rounded-xl p-4 sm:p-5">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Live Detections</h3>
-              {detections.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No objects detected</p>
+              {filteredDetections.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{searchFilter ? "No matching objects" : "No objects detected"}</p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {detections.map((d, i) => (
+                  {filteredDetections.map((d, i) => (
                     <motion.div key={`${d.class}-${d.trackId}-${i}`} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50">
                       <span className="text-sm font-medium text-foreground capitalize">{d.class} #{d.trackId}</span>
                       <span className="text-xs font-mono text-primary">{(d.score * 100).toFixed(1)}%</span>
