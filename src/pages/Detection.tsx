@@ -34,6 +34,8 @@ export default function DetectionPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const lastSaveRef = useRef<number>(0);
   const trackerRef = useRef(new SimpleTracker());
+  const searchFilterRef = useRef(searchFilter);
+  searchFilterRef.current = searchFilter;
 
   const filteredDetections = useMemo(() => {
     if (!searchFilter.trim()) return detections;
