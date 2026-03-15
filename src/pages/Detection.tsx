@@ -202,7 +202,7 @@ export default function DetectionPage() {
       setDetections(tracked);
       setObjectCount(tracked.length);
 
-      drawDetections(ctx, tracked, false);
+      drawDetections(ctx, tracked, false, searchFilterRef.current);
 
       // Save
       tracked.forEach((d) => {
