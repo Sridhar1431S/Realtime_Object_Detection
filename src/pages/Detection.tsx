@@ -121,7 +121,7 @@ export default function DetectionPage() {
         // Draw
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(video, 0, 0);
-        drawDetections(ctx, tracked, settings.trackingEnabled);
+        drawDetections(ctx, tracked, settings.trackingEnabled, searchFilterRef.current);
 
         // FPS
         frameCount++;
