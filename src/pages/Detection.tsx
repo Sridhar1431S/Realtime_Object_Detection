@@ -368,19 +368,23 @@ export default function DetectionPage() {
   );
 }
 
-function drawDetections(ctx: CanvasRenderingContext2D, detections: TrackedDetection[], showTrackId: boolean) {
+function drawDetections(ctx: CanvasRenderingContext2D, detections: TrackedDetection[], showTrackId: boolean, highlightFilter = "") {
   detections.forEach((d) => {
     const [x, y, w, h] = d.bbox;
-    ctx.strokeStyle = "hsl(200, 100%, 50%)";
-    ctx.lineWidth = 2;
+    const isHighlighted = highlightFilter && d.class.toLowerCase().includes(highlightFilter.toLowerCase());
+    const color = isHighlighted ? "hsl(45, 100%, 50%)" : "hsl(200, 100%, 50%)";
+    const bgColor = isHighlighted ? "hsla(45, 100%, 50%, 0.9)" : "hsla(200, 100%, 50%, 0.85)";
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isHighlighted ? 3 : 2;
     ctx.strokeRect(x, y, w, h);
 
     const label = showTrackId
       ? `${d.class} #${d.trackId} ${(d.score * 100).toFixed(0)}%`
       : `${d.class} ${(d.score * 100).toFixed(0)}%`;
-    ctx.font = "14px Inter, sans-serif";
+    ctx.font = isHighlighted ? "bold 14px Inter, sans-serif" : "14px Inter, sans-serif";
     const textW = ctx.measureText(label).width;
-    ctx.fillStyle = "hsla(200, 100%, 50%, 0.85)";
+    ctx.fillStyle = bgColor;
     ctx.fillRect(x, y - 22, textW + 12, 22);
     ctx.fillStyle = "#ffffff";
     ctx.fillText(label, x + 6, y - 6);
