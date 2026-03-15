@@ -33,7 +33,7 @@ export default function ResetPasswordPage() {
 
     if (error) { toast.error(error.message); } else {
       toast.success("Password updated!");
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 

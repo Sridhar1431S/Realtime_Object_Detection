@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Video, VideoOff, Camera, Activity, Settings2, Upload, ImageIcon } from "lucide-react";
 import { saveDetection } from "@/lib/detectionStore";
 import { getSettings } from "@/lib/settingsStore";
 import { playClickSound } from "@/lib/settingsStore";
 import { SimpleTracker, TrackedDetection } from "@/lib/tracker";
+import ObjectSearchBar from "@/components/ObjectSearchBar";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
@@ -28,10 +29,18 @@ export default function DetectionPage() {
   const [mode, setMode] = useState<"webcam" | "image">("webcam");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [imageDetecting, setImageDetecting] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
   const animFrameRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
   const lastSaveRef = useRef<number>(0);
   const trackerRef = useRef(new SimpleTracker());
+  const searchFilterRef = useRef(searchFilter);
+  searchFilterRef.current = searchFilter;
+
+  const filteredDetections = useMemo(() => {
+    if (!searchFilter.trim()) return detections;
+    return detections.filter(d => d.class.toLowerCase().includes(searchFilter.toLowerCase()));
+  }, [detections, searchFilter]);
 
   // Load model
   useEffect(() => {
@@ -112,7 +121,7 @@ export default function DetectionPage() {
         // Draw
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(video, 0, 0);
-        drawDetections(ctx, tracked, settings.trackingEnabled);
+        drawDetections(ctx, tracked, settings.trackingEnabled, searchFilterRef.current);
 
         // FPS
         frameCount++;
@@ -193,7 +202,7 @@ export default function DetectionPage() {
       setDetections(tracked);
       setObjectCount(tracked.length);
 
-      drawDetections(ctx, tracked, false);
+      drawDetections(ctx, tracked, false, searchFilterRef.current);
 
       // Save
       tracked.forEach((d) => {
@@ -333,12 +342,17 @@ export default function DetectionPage() {
             </div>
 
             <div className="hover-card rounded-xl p-4 sm:p-5">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Search Objects</h3>
+              <ObjectSearchBar value={searchFilter} onChange={setSearchFilter} placeholder="Filter detections..." />
+            </div>
+
+            <div className="hover-card rounded-xl p-4 sm:p-5">
               <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Live Detections</h3>
-              {detections.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No objects detected</p>
+              {filteredDetections.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{searchFilter ? "No matching objects" : "No objects detected"}</p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {detections.map((d, i) => (
+                  {filteredDetections.map((d, i) => (
                     <motion.div key={`${d.class}-${d.trackId}-${i}`} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center justify-between p-2 rounded-lg bg-secondary/50">
                       <span className="text-sm font-medium text-foreground capitalize">{d.class} #{d.trackId}</span>
                       <span className="text-xs font-mono text-primary">{(d.score * 100).toFixed(1)}%</span>
@@ -354,19 +368,23 @@ export default function DetectionPage() {
   );
 }
 
-function drawDetections(ctx: CanvasRenderingContext2D, detections: TrackedDetection[], showTrackId: boolean) {
+function drawDetections(ctx: CanvasRenderingContext2D, detections: TrackedDetection[], showTrackId: boolean, highlightFilter = "") {
   detections.forEach((d) => {
     const [x, y, w, h] = d.bbox;
-    ctx.strokeStyle = "hsl(200, 100%, 50%)";
-    ctx.lineWidth = 2;
+    const isHighlighted = highlightFilter && d.class.toLowerCase().includes(highlightFilter.toLowerCase());
+    const color = isHighlighted ? "hsl(45, 100%, 50%)" : "hsl(200, 100%, 50%)";
+    const bgColor = isHighlighted ? "hsla(45, 100%, 50%, 0.9)" : "hsla(200, 100%, 50%, 0.85)";
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isHighlighted ? 3 : 2;
     ctx.strokeRect(x, y, w, h);
 
     const label = showTrackId
       ? `${d.class} #${d.trackId} ${(d.score * 100).toFixed(0)}%`
       : `${d.class} ${(d.score * 100).toFixed(0)}%`;
-    ctx.font = "14px Inter, sans-serif";
+    ctx.font = isHighlighted ? "bold 14px Inter, sans-serif" : "14px Inter, sans-serif";
     const textW = ctx.measureText(label).width;
-    ctx.fillStyle = "hsla(200, 100%, 50%, 0.85)";
+    ctx.fillStyle = bgColor;
     ctx.fillRect(x, y - 22, textW + 12, 22);
     ctx.fillStyle = "#ffffff";
     ctx.fillText(label, x + 6, y - 6);

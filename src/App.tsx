@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import { getSettings } from "@/lib/settingsStore";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Navbar from "./components/Navbar";
-import Index from "./pages/Index";
+import Landing from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
 import Detection from "./pages/Detection";
 import History from "./pages/History";
 import Statistics from "./pages/Statistics";
@@ -60,7 +61,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
 
@@ -68,19 +69,25 @@ const AppRoutes = () => {
   const { user } = useAuth();
   const location = useLocation();
 
+  // Pages where navbar should show (protected pages)
+  const showNavbar = user && !["/", "/login", "/signup", "/forgot-password", "/reset-password"].includes(location.pathname);
+
   return (
     <>
-      {user && <Navbar />}
+      {showNavbar && <Navbar />}
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          {/* Public routes */}
+          {/* Landing page - public */}
+          <Route path="/" element={<Landing />} />
+
+          {/* Auth routes */}
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
           <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Protected routes */}
-          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/detection" element={<ProtectedRoute><Detection /></ProtectedRoute>} />
           <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
           <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />

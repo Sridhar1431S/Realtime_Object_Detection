@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Search, Trash2, Filter } from "lucide-react";
+import { Trash2, Filter } from "lucide-react";
+import ObjectSearchBar from "@/components/ObjectSearchBar";
 import { getHistory, deleteDetection, clearHistory, DetectionEvent } from "@/lib/detectionStore";
 
 const ITEMS_PER_PAGE = 20;
@@ -55,13 +56,10 @@ export default function HistoryPage() {
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 mb-6">
           <div className="relative flex-1 min-w-0 sm:max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search objects..."
+            <ObjectSearchBar
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-secondary text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:outline-none text-sm"
+              onChange={(v) => { setSearch(v); setPage(1); }}
+              placeholder="Search objects..."
             />
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -122,7 +120,7 @@ export default function HistoryPage() {
                     animate={{ opacity: 1 }}
                     className="border-b border-border/50 hover:bg-secondary/30 transition"
                   >
-                    <td className="px-4 sm:px-5 py-3 font-medium text-foreground capitalize">{h.objectName}</td>
+                    <td className={`px-4 sm:px-5 py-3 font-medium capitalize ${search && h.objectName.toLowerCase().includes(search.toLowerCase()) ? "text-primary" : "text-foreground"}`}>{h.objectName}</td>
                     <td className="px-4 sm:px-5 py-3">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full" style={{ background: h.confidence > 0.7 ? "hsl(185, 100%, 50%)" : h.confidence > 0.5 ? "hsl(45, 100%, 50%)" : "hsl(0, 70%, 50%)" }} />
