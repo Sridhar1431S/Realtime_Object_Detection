@@ -56,11 +56,7 @@ export default function Index() {
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }} className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-              <Link to="/detection" onClick={playClickSound} className="btn-glow inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl gradient-cyan text-primary-foreground font-semibold transition-opacity shadow-lg text-sm sm:text-base">
-                <Video className="w-5 h-5" />
-                Start Webcam Detection
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <StartDetectraButton />
               <Link to="/detection" onClick={playClickSound} className="btn-glow inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl border border-border bg-card text-foreground font-semibold hover:bg-secondary transition-colors shadow-sm text-sm sm:text-base">
                 <Upload className="w-5 h-5" />
                 Upload Image

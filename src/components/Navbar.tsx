@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Scan, Menu, X, User } from "lucide-react";
+import { Scan, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { playClickSound } from "@/lib/settingsStore";
 import { useAuth } from "@/contexts/AuthContext";
 
 const links = [
-  { to: "/", label: "Home" },
+  { to: "/dashboard", label: "Home" },
   { to: "/detection", label: "Detection" },
   { to: "/history", label: "History" },
   { to: "/statistics", label: "Statistics" },
@@ -21,7 +21,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5" onClick={playClickSound}>
+        <Link to="/dashboard" className="flex items-center gap-2.5" onClick={playClickSound}>
           <div className="w-8 h-8 rounded-lg gradient-cyan flex items-center justify-center">
             <Scan className="w-5 h-5 text-primary-foreground" />
           </div>
