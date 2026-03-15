@@ -29,10 +29,16 @@ export default function DetectionPage() {
   const [mode, setMode] = useState<"webcam" | "image">("webcam");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [imageDetecting, setImageDetecting] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
   const animFrameRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
   const lastSaveRef = useRef<number>(0);
   const trackerRef = useRef(new SimpleTracker());
+
+  const filteredDetections = useMemo(() => {
+    if (!searchFilter.trim()) return detections;
+    return detections.filter(d => d.class.toLowerCase().includes(searchFilter.toLowerCase()));
+  }, [detections, searchFilter]);
 
   // Load model
   useEffect(() => {
