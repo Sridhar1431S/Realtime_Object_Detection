@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Search, Trash2, Filter } from "lucide-react";
+import { Trash2, Filter } from "lucide-react";
+import ObjectSearchBar from "@/components/ObjectSearchBar";
 import { getHistory, deleteDetection, clearHistory, DetectionEvent } from "@/lib/detectionStore";
 
 const ITEMS_PER_PAGE = 20;
