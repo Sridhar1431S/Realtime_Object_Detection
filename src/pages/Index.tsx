@@ -235,7 +235,7 @@ export default function Index() {
               <div>
                 <h4 className="font-semibold text-foreground mb-3">Quick Links</h4>
                 <div className="space-y-2">
-                  {[{ to: "/", label: "Home" }, { to: "/detection", label: "Detection" }, { to: "/history", label: "History" }, { to: "/statistics", label: "Statistics" }, { to: "/profile", label: "Profile" }].map(l => (
+                  {[{ to: "/dashboard", label: "Home" }, { to: "/detection", label: "Detection" }, { to: "/history", label: "History" }, { to: "/statistics", label: "Statistics" }, { to: "/profile", label: "Profile" }].map(l => (
                     <Link key={l.to} to={l.to} className="block text-sm text-muted-foreground hover:text-primary transition-colors">{l.label}</Link>
                   ))}
                 </div>
