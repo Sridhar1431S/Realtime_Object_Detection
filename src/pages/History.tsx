@@ -120,7 +120,7 @@ export default function HistoryPage() {
                     animate={{ opacity: 1 }}
                     className="border-b border-border/50 hover:bg-secondary/30 transition"
                   >
-                    <td className="px-4 sm:px-5 py-3 font-medium text-foreground capitalize">{h.objectName}</td>
+                    <td className={`px-4 sm:px-5 py-3 font-medium capitalize ${search && h.objectName.toLowerCase().includes(search.toLowerCase()) ? "text-primary" : "text-foreground"}`}>{h.objectName}</td>
                     <td className="px-4 sm:px-5 py-3">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full" style={{ background: h.confidence > 0.7 ? "hsl(185, 100%, 50%)" : h.confidence > 0.5 ? "hsl(45, 100%, 50%)" : "hsl(0, 70%, 50%)" }} />
