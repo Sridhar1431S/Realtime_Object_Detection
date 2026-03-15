@@ -21,6 +21,22 @@ const fadeUp = {
   transition: { duration: 0.6 },
 };
 
+function StartDetectraButton() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const handleClick = () => {
+    playClickSound();
+    navigate(user ? "/dashboard" : "/login");
+  };
+  return (
+    <button onClick={handleClick} className="btn-glow inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl gradient-cyan text-primary-foreground font-semibold transition-opacity shadow-lg text-sm sm:text-base">
+      <Scan className="w-5 h-5" />
+      Start Detectra
+      <ArrowRight className="w-4 h-4" />
+    </button>
+  );
+}
+
 export default function Index() {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
