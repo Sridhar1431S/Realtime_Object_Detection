@@ -160,15 +160,37 @@
 
   /* Button glow effect */
   .btn-glow {
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     position: relative;
+    background-size: 200% 200%;
   }
   .btn-glow:hover {
-    box-shadow: 0 4px 15px hsl(var(--primary) / 0.3);
-    transform: translateY(-1px);
+    box-shadow: 0 4px 20px hsl(var(--primary) / 0.4), 0 0 40px hsl(var(--primary) / 0.15);
+    transform: translateY(-2px);
+    background-position: right center;
   }
   .btn-glow:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 2px 8px hsl(var(--primary) / 0.2);
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 2px 10px hsl(var(--primary) / 0.25);
+  }
+
+  /* Ripple animation */
+  @keyframes ripple {
+    0% { transform: scale(0); opacity: 0.6; }
+    100% { transform: scale(8); opacity: 0; }
+  }
+
+  /* Parallax section */
+  .parallax-slow {
+    will-change: transform;
+  }
+
+  /* Animated icon */
+  .icon-animated {
+    transition: all 0.3s ease;
+  }
+  .group:hover .icon-animated {
+    transform: rotate(8deg) scale(1.1);
+    filter: drop-shadow(0 0 8px hsl(var(--primary) / 0.4));
   }
 }
