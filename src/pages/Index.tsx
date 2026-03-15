@@ -214,11 +214,7 @@ export default function Index() {
             <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto">
               <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mb-4 sm:mb-6">Ready to <span className="text-primary">Try It?</span></h2>
               <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">Start detecting and tracking objects in real-time with our AI-powered system.</p>
-              <Link to="/detection" onClick={playClickSound} className="btn-glow inline-flex items-center gap-2 px-8 sm:px-10 py-3.5 sm:py-4 rounded-xl gradient-cyan text-primary-foreground font-semibold text-base sm:text-lg transition-opacity shadow-lg">
-                <Scan className="w-5 sm:w-6 h-5 sm:h-6" />
-                Launch Detection
-                <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5" />
-              </Link>
+              <StartDetectraButton />
             </motion.div>
           </div>
         </section>
