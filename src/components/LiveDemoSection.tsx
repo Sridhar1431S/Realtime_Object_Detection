@@ -95,7 +95,7 @@ export default function LiveDemoSection() {
 
             {/* HUD overlay */}
             <div className="absolute top-3 left-3 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               <span className="text-xs font-mono text-primary/80">LIVE DETECTION</span>
             </div>
             <div className="absolute top-3 right-3 text-xs font-mono text-muted-foreground">
