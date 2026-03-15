@@ -56,13 +56,10 @@ export default function HistoryPage() {
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 mb-6">
           <div className="relative flex-1 min-w-0 sm:max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search objects..."
+            <ObjectSearchBar
               value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-secondary text-foreground placeholder:text-muted-foreground border border-border focus:border-primary focus:outline-none text-sm"
+              onChange={(v) => { setSearch(v); setPage(1); }}
+              placeholder="Search objects..."
             />
           </div>
           <div className="flex items-center gap-2 flex-wrap">
