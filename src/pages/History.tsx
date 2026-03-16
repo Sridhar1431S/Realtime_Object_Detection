@@ -160,5 +160,6 @@ export default function HistoryPage() {
         )}
       </div>
     </div>
+    </PageTransition>
   );
 }

@@ -62,5 +62,6 @@ export default function ForgotPasswordPage() {
         </div>
       </motion.div>
     </div>
+    </PageTransition>
   );
 }

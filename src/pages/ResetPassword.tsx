@@ -69,5 +69,6 @@ export default function ResetPasswordPage() {
         </div>
       </motion.div>
     </div>
+    </PageTransition>
   );
 }

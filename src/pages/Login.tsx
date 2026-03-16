@@ -102,5 +102,6 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+    </PageTransition>
   );
 }

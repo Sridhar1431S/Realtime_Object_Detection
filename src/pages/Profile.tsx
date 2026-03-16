@@ -120,5 +120,6 @@ export default function ProfilePage() {
         </motion.div>
       </div>
     </div>
+    </PageTransition>
   );
 }
