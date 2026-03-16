@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
