@@ -26,9 +26,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex items-center justify-center px-4 bg-background">
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-        <div className="glass-card rounded-2xl p-8 shadow-lg">
+        <div className="hover-card rounded-2xl p-6 sm:p-8 shadow-lg">
           <div className="flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl gradient-cyan flex items-center justify-center mb-4">
               <Scan className="w-7 h-7 text-primary-foreground" />
