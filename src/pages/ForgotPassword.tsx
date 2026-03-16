@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
               </div>
-              <Button type="submit" disabled={loading} className="w-full gradient-cyan text-primary-foreground font-medium">
+              <Button type="submit" disabled={loading} className="w-full btn-glow gradient-cyan text-primary-foreground font-medium">
                 {loading ? "Sending..." : "Send Reset Link"}
               </Button>
               <Link to="/login" className="text-primary text-sm hover:underline flex items-center gap-1 justify-center">
