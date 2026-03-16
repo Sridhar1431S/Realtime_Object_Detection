@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { playClickSound } from "@/lib/settingsStore";
 import { toast } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 interface ProfileData {
   full_name: string | null;
