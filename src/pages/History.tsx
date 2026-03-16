@@ -45,6 +45,7 @@ export default function HistoryPage() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen pt-20 pb-12">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
