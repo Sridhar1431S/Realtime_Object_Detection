@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input type={showPassword ? "text" : "password"} placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="pl-10" />
             </div>
-            <Button type="submit" disabled={loading} className="w-full gradient-cyan text-primary-foreground font-medium">
+            <Button type="submit" disabled={loading} className="w-full btn-glow gradient-cyan text-primary-foreground font-medium">
               {loading ? "Updating..." : "Update Password"}
             </Button>
           </form>
