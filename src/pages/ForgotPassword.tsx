@@ -7,6 +7,7 @@ import { playClickSound } from "@/lib/settingsStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 export default function ForgotPasswordPage() {
   const { resetPassword } = useAuth();
@@ -25,9 +26,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex items-center justify-center px-4 bg-background">
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-        <div className="glass-card rounded-2xl p-8 shadow-lg">
+        <div className="hover-card rounded-2xl p-6 sm:p-8 shadow-lg">
           <div className="flex flex-col items-center mb-8">
             <div className="w-12 h-12 rounded-xl gradient-cyan flex items-center justify-center mb-4">
               <Scan className="w-7 h-7 text-primary-foreground" />
@@ -49,7 +51,7 @@ export default function ForgotPasswordPage() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-10" />
               </div>
-              <Button type="submit" disabled={loading} className="w-full gradient-cyan text-primary-foreground font-medium">
+              <Button type="submit" disabled={loading} className="w-full btn-glow gradient-cyan text-primary-foreground font-medium">
                 {loading ? "Sending..." : "Send Reset Link"}
               </Button>
               <Link to="/login" className="text-primary text-sm hover:underline flex items-center gap-1 justify-center">
@@ -60,5 +62,6 @@ export default function ForgotPasswordPage() {
         </div>
       </motion.div>
     </div>
+    </PageTransition>
   );
 }

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { playClickSound } from "@/lib/settingsStore";
 import { toast } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 interface ProfileData {
   full_name: string | null;
@@ -48,6 +49,7 @@ export default function ProfilePage() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen pt-20 pb-12">
       <div className="container mx-auto px-4 sm:px-6 max-w-2xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="hover-card rounded-2xl p-6 sm:p-8">
@@ -118,5 +120,6 @@ export default function ProfilePage() {
         </motion.div>
       </div>
     </div>
+    </PageTransition>
   );
 }

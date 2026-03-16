@@ -7,6 +7,7 @@ import { playClickSound } from "@/lib/settingsStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 export default function SignupPage() {
   const { signUp } = useAuth();
@@ -48,6 +49,7 @@ export default function SignupPage() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex items-center justify-center px-4 bg-background">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -129,5 +131,6 @@ export default function SignupPage() {
         </div>
       </motion.div>
     </div>
+    </PageTransition>
   );
 }

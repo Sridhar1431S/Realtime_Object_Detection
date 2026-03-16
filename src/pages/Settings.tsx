@@ -8,6 +8,7 @@ import { getSettings, saveSettings, playClickSound, AppSettings } from "@/lib/se
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import PageTransition from "@/components/PageTransition";
 
 type Category = "profile" | "password" | "detection" | "ui";
 
@@ -70,6 +71,7 @@ export default function SettingsPage() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen pt-20 pb-12">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -270,5 +272,6 @@ export default function SettingsPage() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }
