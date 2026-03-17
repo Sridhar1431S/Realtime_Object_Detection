@@ -230,6 +230,16 @@ export default function DetectionPage() {
     link.click();
   };
 
+  const handleVoiceCommand = useCallback((result: VoiceCommandResult) => {
+    if (result.action === "start_detection" && !running && model) {
+      startCamera();
+    } else if (result.action === "stop_detection" && running) {
+      stopCamera();
+    } else if ((result.action === "find" || result.action === "search") && result.param) {
+      setSearchFilter(result.param);
+    }
+  }, [running, model, startCamera, stopCamera]);
+
   const showCanvas = running || (mode === "image" && uploadedImage);
 
   return (
