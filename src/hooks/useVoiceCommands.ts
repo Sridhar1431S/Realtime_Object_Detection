@@ -50,7 +50,7 @@ export function useVoiceCommands(options: UseVoiceCommandsOptions = {}) {
   const [transcript, setTranscript] = useState("");
   const [lastCommand, setLastCommand] = useState<VoiceCommandResult | null>(null);
   const [supported, setSupported] = useState(true);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
