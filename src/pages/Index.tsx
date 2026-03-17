@@ -62,10 +62,10 @@ export default function Index() {
               </span>
             </motion.div>
 
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="text-3xl sm:text-5xl md:text-7xl font-black font-display leading-tight mb-4 sm:mb-6">
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="text-3xl sm:text-5xl md:text-7xl font-black font-display leading-tight mb-4 sm:mb-6 text-3d">
               Real-Time AI Object
               <br />
-              <span className="text-primary glow-text">Detection & Tracking</span>
+              <span className="gradient-text">Detection & Tracking</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }} className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
@@ -93,7 +93,7 @@ export default function Index() {
           <div className="container mx-auto px-4 sm:px-6">
             <motion.div {...fadeUp} className="text-center mb-12 sm:mb-16">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest">Features</span>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4">Powerful AI <span className="text-primary">Capabilities</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4 text-3d">Powerful AI <span className="gradient-text">Capabilities</span></h2>
               <p className="text-muted-foreground max-w-lg mx-auto text-sm sm:text-base">Built for speed and accuracy with state-of-the-art deep learning technology.</p>
             </motion.div>
 
@@ -128,7 +128,7 @@ export default function Index() {
           <div className="container mx-auto px-4 sm:px-6">
             <motion.div {...fadeUp} className="text-center mb-12 sm:mb-16">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest">Technology</span>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4">Powered by <span className="text-primary">Advanced AI</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4 text-3d">Powered by <span className="gradient-text">Advanced AI</span></h2>
             </motion.div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {[
@@ -154,7 +154,7 @@ export default function Index() {
           <div className="container mx-auto px-4 sm:px-6">
             <motion.div {...fadeUp} className="text-center mb-12 sm:mb-16">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest">Process</span>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4">How It <span className="text-primary">Works</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4 text-3d">How It <span className="gradient-text">Works</span></h2>
             </motion.div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
               {[
@@ -180,7 +180,7 @@ export default function Index() {
           <div className="container mx-auto px-4 sm:px-6">
             <motion.div {...fadeUp} className="text-center mb-12 sm:mb-16">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest">Applications</span>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4">Real-World <span className="text-primary">Use Cases</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4 text-3d">Real-World <span className="gradient-text">Use Cases</span></h2>
             </motion.div>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               {[
@@ -212,7 +212,7 @@ export default function Index() {
           <NeuralBackground />
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
             <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mb-4 sm:mb-6">Ready to <span className="text-primary">Try It?</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mb-4 sm:mb-6 text-3d">Ready to <span className="gradient-text">Try It?</span></h2>
               <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">Start detecting and tracking objects in real-time with our AI-powered system.</p>
               <StartDetectraButton />
             </motion.div>
