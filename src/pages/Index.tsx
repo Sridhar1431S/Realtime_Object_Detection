@@ -62,10 +62,10 @@ export default function Index() {
               </span>
             </motion.div>
 
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="text-3xl sm:text-5xl md:text-7xl font-black font-display leading-tight mb-4 sm:mb-6">
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }} className="text-3xl sm:text-5xl md:text-7xl font-black font-display leading-tight mb-4 sm:mb-6 text-3d">
               Real-Time AI Object
               <br />
-              <span className="text-primary glow-text">Detection & Tracking</span>
+              <span className="gradient-text">Detection & Tracking</span>
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }} className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 px-2">
