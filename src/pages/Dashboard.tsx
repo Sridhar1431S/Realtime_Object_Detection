@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Video, Upload, History, BarChart3, ArrowRight, Scan, Activity } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { getHistory } from "@/lib/detectionStore";
 import PageTransition from "@/components/PageTransition";
 import { playClickSound } from "@/lib/settingsStore";
 import { useCountUp } from "@/hooks/useCountUp";
+import VoiceCommandButton from "@/components/VoiceCommandButton";
+import { VoiceCommandResult } from "@/hooks/useVoiceCommands";
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
@@ -18,7 +20,16 @@ function AnimatedStat({ value, suffix = "" }: { value: number | string; suffix?:
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const history = useMemo(() => getHistory(), []);
+
+  const handleVoiceCommand = useCallback((result: VoiceCommandResult) => {
+    if (result.action === "start_detection") {
+      navigate("/detection");
+    } else if (result.action === "find" || result.action === "search") {
+      navigate("/detection");
+    }
+  }, [navigate]);
   const totalDetections = history.length;
   const objectTypes = useMemo(() => new Set(history.map(h => h.objectName)).size, [history]);
   const avgConf = totalDetections > 0 ? Math.round(history.reduce((a, h) => a + h.confidence, 0) / totalDetections * 100) : 0;
@@ -101,6 +112,8 @@ export default function Dashboard() {
               )}
             </div>
           </motion.div>
+
+          <VoiceCommandButton onCommand={handleVoiceCommand} />
         </div>
       </div>
     </PageTransition>

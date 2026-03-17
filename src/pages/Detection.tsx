@@ -6,6 +6,8 @@ import { getSettings } from "@/lib/settingsStore";
 import { playClickSound } from "@/lib/settingsStore";
 import { SimpleTracker, TrackedDetection } from "@/lib/tracker";
 import ObjectSearchBar from "@/components/ObjectSearchBar";
+import VoiceCommandButton from "@/components/VoiceCommandButton";
+import { VoiceCommandResult } from "@/hooks/useVoiceCommands";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
@@ -228,6 +230,16 @@ export default function DetectionPage() {
     link.click();
   };
 
+  const handleVoiceCommand = useCallback((result: VoiceCommandResult) => {
+    if (result.action === "start_detection" && !running && model) {
+      startCamera();
+    } else if (result.action === "stop_detection" && running) {
+      stopCamera();
+    } else if ((result.action === "find" || result.action === "search") && result.param) {
+      setSearchFilter(result.param);
+    }
+  }, [running, model, startCamera, stopCamera]);
+
   const showCanvas = running || (mode === "image" && uploadedImage);
 
   return (
@@ -363,6 +375,8 @@ export default function DetectionPage() {
             </div>
           </div>
         </div>
+
+        <VoiceCommandButton onCommand={handleVoiceCommand} />
       </div>
     </div>
   );
