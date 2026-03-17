@@ -48,8 +48,8 @@ export default function Dashboard() {
       <div className="min-h-screen pt-20 pb-12">
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display mb-2">
-              Welcome to <span className="text-primary">Detectra AI</span>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-display mb-2 text-3d">
+              Welcome to <span className="gradient-text">Detectra AI</span>
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground">Your AI-powered object detection dashboard.</p>
           </motion.div>
