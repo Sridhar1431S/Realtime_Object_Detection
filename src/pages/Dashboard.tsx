@@ -20,7 +20,16 @@ function AnimatedStat({ value, suffix = "" }: { value: number | string; suffix?:
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const history = useMemo(() => getHistory(), []);
+
+  const handleVoiceCommand = useCallback((result: VoiceCommandResult) => {
+    if (result.action === "start_detection") {
+      navigate("/detection");
+    } else if (result.action === "find" || result.action === "search") {
+      navigate("/detection");
+    }
+  }, [navigate]);
   const totalDetections = history.length;
   const objectTypes = useMemo(() => new Set(history.map(h => h.objectName)).size, [history]);
   const avgConf = totalDetections > 0 ? Math.round(history.reduce((a, h) => a + h.confidence, 0) / totalDetections * 100) : 0;
