@@ -1,11 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Video, Upload, History, BarChart3, ArrowRight, Scan, Activity } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { getHistory } from "@/lib/detectionStore";
 import PageTransition from "@/components/PageTransition";
 import { playClickSound } from "@/lib/settingsStore";
 import { useCountUp } from "@/hooks/useCountUp";
+import VoiceCommandButton from "@/components/VoiceCommandButton";
+import { VoiceCommandResult } from "@/hooks/useVoiceCommands";
 
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
