@@ -93,7 +93,7 @@ export default function Index() {
           <div className="container mx-auto px-4 sm:px-6">
             <motion.div {...fadeUp} className="text-center mb-12 sm:mb-16">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest">Features</span>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4">Powerful AI <span className="text-primary">Capabilities</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4 text-3d">Powerful AI <span className="gradient-text">Capabilities</span></h2>
               <p className="text-muted-foreground max-w-lg mx-auto text-sm sm:text-base">Built for speed and accuracy with state-of-the-art deep learning technology.</p>
             </motion.div>
 
