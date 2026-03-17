@@ -180,7 +180,7 @@ export default function Index() {
           <div className="container mx-auto px-4 sm:px-6">
             <motion.div {...fadeUp} className="text-center mb-12 sm:mb-16">
               <span className="text-primary text-sm font-semibold uppercase tracking-widest">Applications</span>
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4">Real-World <span className="text-primary">Use Cases</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mt-3 mb-4 text-3d">Real-World <span className="gradient-text">Use Cases</span></h2>
             </motion.div>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
               {[
