@@ -375,6 +375,8 @@ export default function DetectionPage() {
             </div>
           </div>
         </div>
+
+        <VoiceCommandButton onCommand={handleVoiceCommand} />
       </div>
     </div>
   );
