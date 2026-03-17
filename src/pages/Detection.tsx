@@ -6,6 +6,8 @@ import { getSettings } from "@/lib/settingsStore";
 import { playClickSound } from "@/lib/settingsStore";
 import { SimpleTracker, TrackedDetection } from "@/lib/tracker";
 import ObjectSearchBar from "@/components/ObjectSearchBar";
+import VoiceCommandButton from "@/components/VoiceCommandButton";
+import { VoiceCommandResult } from "@/hooks/useVoiceCommands";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
