@@ -212,7 +212,7 @@ export default function Index() {
           <NeuralBackground />
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
             <motion.div {...fadeUp} className="text-center max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mb-4 sm:mb-6">Ready to <span className="text-primary">Try It?</span></h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-display mb-4 sm:mb-6 text-3d">Ready to <span className="gradient-text">Try It?</span></h2>
               <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10">Start detecting and tracking objects in real-time with our AI-powered system.</p>
               <StartDetectraButton />
             </motion.div>
