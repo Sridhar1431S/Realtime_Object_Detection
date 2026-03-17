@@ -112,6 +112,8 @@ export default function Dashboard() {
               )}
             </div>
           </motion.div>
+
+          <VoiceCommandButton onCommand={handleVoiceCommand} />
         </div>
       </div>
     </PageTransition>
