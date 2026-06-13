@@ -206,4 +206,4 @@ This project is open source. Feel free to use, modify, and distribute it as per 
 
 ---
 
-> Built with ❤️ by [Sridhar1431S](https://github.com/Sridhar1431S)
+> Built by [Sridhar1431S](https://github.com/Sridhar1431S)
